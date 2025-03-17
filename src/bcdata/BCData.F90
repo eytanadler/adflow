@@ -1487,6 +1487,7 @@ contains
                     if (trim(varName) == "Thrust") then
                         actuatorRegions(iRegion)%force = actuatorRegions(iRegion)%axisVec * &
                                                          bcDataIn(iVar)
+                        actuatorRegions(iRegion)%thrust = bcDataIn(iVar)
                     else if (trim(varName) == "Torque") then
                         actuatorRegions(iRegion)%torque = bcDataIn(iVar)
                     else if (trim(varName) == "Heat") then
@@ -1587,6 +1588,8 @@ contains
                                                          bcDataIn(iVar)
                         actuatorRegionsd(iRegion)%force = actuatorRegions(iRegion)%axisVec * &
                                                           bcDataInd(iVar)
+                        actuatorRegions(iRegion)%thrust = bcDataIn(iVar)
+                        actuatorRegionsd(iRegion)%thrust = bcDataInd(iVar)
                     else if (trim(varName) == "Torque") then
                         actuatorRegions(iRegion)%torque = bcDataIn(iVar)
                         actuatorRegionsd(iRegion)%torque = bcDataInd(iVar)
@@ -1688,8 +1691,12 @@ contains
                     varName = char2str(bcDataNamesIn(iVar, :), maxCGNSNameLen)
 
                     if (trim(varName) == "Thrust") then
-                        bcDataInd(ivar) = &
-                            sum(actuatorRegions(iRegion)%axisVec * actuatorRegionsd(iRegion)%force)
+                        if (actuatorRegions(iRegion)%actType == 'uniform') then
+                            bcDataInd(ivar) = &
+                                sum(actuatorRegions(iRegion)%axisVec * actuatorRegionsd(iRegion)%force)
+                        else
+                            bcDataInd(ivar) = actuatorRegionsd(iRegion)%thrust
+                        end if
                     else if (trim(varName) == "Torque") then
                         bcDataInd(ivar) = actuatorRegionsd(iRegion)%torque
                     else if (trim(varName) == "Heat") then
